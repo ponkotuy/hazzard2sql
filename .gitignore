@@ -1,2 +1,7 @@
 *.class
 *.log
+target/
+
+*.dbf
+*.shp
+*.shx
