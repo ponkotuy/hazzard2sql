@@ -2,6 +2,10 @@
 *.log
 target/
 
+# ignore shapefile
 *.dbf
 *.shp
 *.shx
+
+# ignore SQL
+*.sql
