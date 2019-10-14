@@ -6,8 +6,8 @@ import java.util.zip.{ZipEntry, ZipFile}
 
 import scala.jdk.CollectionConverters._
 
-class ZipWrapper(file: File) {
-  val zip = new ZipFile(file, Charset.forName("MS932"))
+class ZipWrapper(file: File, charset: Charset) {
+  val zip = new ZipFile(file, charset)
   def fileList: Iterator[ZipEntry] = {
     zip.entries().asScala
   }
