@@ -1,4 +1,4 @@
-import org.locationtech.jts.geom.{Coordinate, MultiPolygon}
+import org.locationtech.jts.geom.MultiPolygon
 import utils.FeatureWrapper
 
 case class FloodPolygon(surveyId: Int, depth: Depth, polygon: MultiPolygon)

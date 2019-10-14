@@ -1,15 +1,18 @@
+import java.io.StringWriter
+
+import org.geotools.geojson.geom.GeometryJSON
 import org.locationtech.jts.geom.MultiPolygon
 
 class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: String, polygonColumn: String) {
   def genInit: String =
-    s"""create table ${table} (
-       |  id bigint not null primary auto_increment,
-       |  ${surveyIdColumn} integer not null,
+    s"""create table if not exists ${table} (
+       |  id bigint not null auto_increment primary key,
+       |  ${surveyIdColumn} int not null,
        |  ${depthColumn} double not null,
        |  ${polygonColumn} geometry not null,
        |  index (${surveyIdColumn}),
        |  spatial index (${polygonColumn})
-       |);""".stripMargin
+       |) engine=InnoDB default charset=utf8mb4;""".stripMargin
 
   def gen(polygons: Seq[FloodPolygon]): String = {
     val csv = polygons.map { p =>
@@ -18,11 +21,12 @@ class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: St
     s"insert into ${table} (${surveyIdColumn}, ${depthColumn}, ${polygonColumn}) values ${csv};"
   }
 
-  def toSQL(x: MultiPolygon): String = {
-    val polygons = (0 until x.getNumGeometries).map(x.getGeometryN)
-    val csv = polygons.map { p =>
-      p.getCoordinates.map { c => s"${c.x} ${c.y}" }.mkString("(", ",", ")")
-    }.mkString("(", ",", ")")
-    s"GeomFromText('MultiPolygon($csv)')"
+  def toSQL(x: MultiPolygon): String = s"ST_GeomFromGeoJSON('${toGeoJson(x)}')"
+
+  def toGeoJson(x: MultiPolygon): String = {
+    val gjson = new GeometryJSON()
+    val writer = new StringWriter()
+    gjson.write(x, writer)
+    writer.toString
   }
 }
