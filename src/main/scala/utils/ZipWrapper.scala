@@ -1,7 +1,7 @@
 package utils
 
 import java.io.{File, InputStream}
-import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.charset.Charset
 import java.util.zip.{ZipEntry, ZipFile}
 
 import scala.jdk.CollectionConverters._

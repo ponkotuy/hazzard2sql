@@ -1,8 +1,8 @@
 import java.io.{File, PrintWriter}
 import java.nio.file.{Files, Path, Paths}
-import java.util.Comparator
 
 import utils.{ShapefileWrapper, ZipWrapper}
+
 import scala.jdk.CollectionConverters._
 
 object Main {
