@@ -15,3 +15,9 @@ libraryDependencies ++= Seq(
   "org.geotools" % "gt-geojson" % GeotoolsVersion,
   "com.github.tototoshi" %% "scala-csv" % "1.3.6"
 )
+
+run / fork := true
+
+// Disable ScalaDoc
+sources in (Compile, doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false

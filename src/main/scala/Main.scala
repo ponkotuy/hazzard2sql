@@ -17,9 +17,10 @@ object Main {
   def main(args: Array[String]): Unit = {
     createSurveySQL()
     zipList("sources").foreach { file =>
+      println(s"Start: ${file.getName}")
       val path = Files.createTempDirectory(Paths.get("/tmp"), "hazzard2sql")
       val zip = new ZipWrapper(file, DefaultCharset)
-      zip.fileList.foreach { entry =>
+      zip.fileList.filterNot(_.isDirectory).foreach { entry =>
         val is = zip.getInputStream(entry)
         val newPath = path.resolve(entry.getName)
         Files.createDirectories(newPath.getParent)
