@@ -1,9 +1,12 @@
 import java.io.StringWriter
 
 import org.geotools.geojson.geom.GeometryJSON
-import org.locationtech.jts.geom.MultiPolygon
+import org.geotools.geometry.jts.JTSFactoryFinder
+import org.locationtech.jts.geom.{MultiPolygon, Polygon}
 
 class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: String, polygonColumn: String) {
+  import PolygonSQLGenerator._
+
   def genInit: String =
     s"""create table if not exists ${table} (
        |  id bigint not null auto_increment primary key,
@@ -20,13 +23,28 @@ class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: St
     }.mkString(",")
     s"insert into ${table} (${surveyIdColumn}, ${depthColumn}, ${polygonColumn}) values ${csv};"
   }
+}
 
+object PolygonSQLGenerator {
   def toSQL(x: MultiPolygon): String = s"ST_GeomFromGeoJSON('${toGeoJson(x)}')"
 
   def toGeoJson(x: MultiPolygon): String = {
     val gjson = new GeometryJSON()
     val writer = new StringWriter()
-    gjson.write(x, writer)
+    gjson.write(closePolygon(x), writer)
     writer.toString
+  }
+
+  def closePolygon(x: MultiPolygon) = {
+    val newPolygons: Array[Polygon] = (0 until x.getNumGeometries).map(x.getGeometryN).map { polygon =>
+      val coors = polygon.getCoordinates
+      if(coors.head == coors.last) polygon.asInstanceOf[Polygon]
+      else {
+        val factory = JTSFactoryFinder.getGeometryFactory
+        factory.createPolygon(coors :+ coors.head)
+      }
+    }.toArray
+    val factory = JTSFactoryFinder.getGeometryFactory
+    factory.createMultiPolygon(newPolygons)
   }
 }
