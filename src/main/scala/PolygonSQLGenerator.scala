@@ -11,7 +11,8 @@ class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: St
     s"""create table if not exists ${table} (
        |  id bigint not null auto_increment primary key,
        |  ${surveyIdColumn} int not null,
-       |  ${depthColumn} double not null,
+       |  ${depthColumn}_min double not null,
+       |  ${depthColumn}_max double not null,
        |  ${polygonColumn} geometry not null,
        |  index (${surveyIdColumn}),
        |  spatial index (${polygonColumn})
@@ -19,7 +20,7 @@ class PolygonSQLGenerator(table: String, surveyIdColumn: String, depthColumn: St
 
   def gen(polygons: Seq[FloodPolygon]): String = {
     val csv = polygons.map { p =>
-      s"(${p.surveyId}, ${p.depth.min}, ${toSQL(p.polygon)})"
+      s"(${p.surveyId}, ${p.depth.min}, ${p.depth.max}, ${toSQL(p.polygon)})"
     }.mkString(",")
     s"insert into ${table} (${surveyIdColumn}, ${depthColumn}, ${polygonColumn}) values ${csv};"
   }
