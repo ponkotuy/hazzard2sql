@@ -5,7 +5,7 @@ class SurveySQLGenerator(table: String) {
        |  contents text(65535) not null,
        |  code int not null,
        |  author varchar(255) not null,
-       |  `date` date not null,
+       |  survey_date date not null,
        |  number varchar(255) not null,
        |  target varchar(255) not null,
        |  rainfall varchar(255) not null,
@@ -14,7 +14,7 @@ class SurveySQLGenerator(table: String) {
        |) engine=InnoDB default charset=utf8mb4;""".stripMargin
 
   def gen(s: Survey): String = {
-    val csv = s"(${s.id}, '${s.contents.mkString("\n")}', ${s.code}, '${s.author}', '${s.date.toString}', '${s.number}', '${s.target}', '${s.rainfall}', '${s.city}', '${s.others.mkString("\n")}')"
-    s"insert ignore into ${table} (id, contents, code, author, `date`, number, target, rainfall, city, others) values ${csv};"
+    val csv = s"(${s.id}, '${s.contents.mkString("\n")}', ${s.code}, '${s.author}', '${s.date.getOrElse("0000-00-00")}', '${s.number}', '${s.target}', '${s.rainfall}', '${s.city}', '${s.others.mkString("\n")}')"
+    s"insert ignore into ${table} (id, contents, code, author, survey_date, number, target, rainfall, city, others) values ${csv};"
   }
 }
