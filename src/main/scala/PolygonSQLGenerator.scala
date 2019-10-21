@@ -36,7 +36,7 @@ object PolygonSQLGenerator {
     writer.toString
   }
 
-  def closePolygon(x: MultiPolygon) = {
+  def closePolygon(x: MultiPolygon): MultiPolygon = {
     val newPolygons: Array[Polygon] = (0 until x.getNumGeometries).map(x.getGeometryN).map { polygon =>
       val coors = polygon.getCoordinates
       if(coors.head == coors.last) polygon.asInstanceOf[Polygon]
